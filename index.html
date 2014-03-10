@@ -1,0 +1,53 @@
+<!DOCTYPE >
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>force_sample</title>
+		<script src="js/d3.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			var width = 960,
+				height = 320;
+				
+			var color = d3.scale.category20();
+			
+			var svg = d3.select("body").append("svg").attr({
+				"width": width,
+				"heihgt": height
+			});
+			
+			var force = d3.layout.force().linkDistance([300]).size([width, height]);
+			
+			d3.json("sample.json", function(d){
+				force
+					.nodes(d.nodes)
+					.links(d.links)
+					.start();
+					
+				var node = svg.selectAll("circle")
+								.data(d.nodes)
+								.enter()
+								.append("circle")
+								.attr("r", 5)
+								.call(force.drag);
+								
+				var link = svg.selectAll("line")
+								.data(d.links)
+								.enter()
+								.append("line")
+								
+				force.on("tick",function(){
+					node.attr("cx", function(d){ return d.x;})
+						.attr("cy", function(d){ return d.y;});
+						
+					link.attr("x1", function(d){ return d.source.x;})
+						.attr("y1", function(d){ return d.source.y;})
+						.attr("x2", function(d){ return d.target.x;})
+						.attr("y2", function(d){ return d.target.y;})
+				});
+								
+			});
+		</script>
+	</body>
+</html>
